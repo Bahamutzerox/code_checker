@@ -1,14 +1,14 @@
 {
-  "name": "學名狀態檢核",
-  "short_name": "名稱檢核",
-  "description": "植物命名法規（馬德里法規 2024）學名狀態四層檢核工具",
+  "name": "Open Code",
+  "short_name": "Open Code",
+  "description": "植物命名法規開放工具（馬德里法規 2024）",
   "lang": "zh-TW",
-  "start_url": "./name_checker.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#FDF8F5",
-  "theme_color": "#967E76",
+  "background_color": "#0C0C14",
+  "theme_color": "#00E5CC",
   "icons": [
     {
       "src": "icon.svg",
