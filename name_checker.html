@@ -765,11 +765,11 @@ document.addEventListener('click', e => {
 async function ipniSearch(q) {
   try {
     const res = await fetch(
-      `https://www.ipni.org/api/1/search?q=${encodeURIComponent(q)}&perPage=8`
+      `https://www.ipni.org/api/1/search?q=${encodeURIComponent(q)}&perPage=30`
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    const results = (data.results || []).filter(r => r.name);
+    const results = (data.results || []).filter(r => r.name).slice(0, 8);
     if (results.length === 0) {
       ipniDropdown('<div class="ipni-msg">無符合結果</div>');
       return;
