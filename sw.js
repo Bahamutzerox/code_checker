@@ -1,5 +1,5 @@
-const CACHE = 'name-checker-v1';
-const CORE  = ['./name_checker.html', './icon.svg', './manifest.json'];
+const CACHE = 'open-code-v2';
+const CORE  = ['./index.html', './name_checker.html', './madrid_graph.html', './icon.svg', './manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)));
