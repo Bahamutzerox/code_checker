@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>學名狀態檢核</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#967E76">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="名稱檢核">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #FDF8F5;
+      --bg2:      #F5EDE6;
+      --bg3:      #EEE3CB;
+      --border:   #D7C0AE;
+      --text:     #4A3728;
+      --text2:    #7A6058;
+      --accent:   #967E76;
+      --accent2:  #C8B5AA;
+
+      --ok:       #3A6E3A;
+      --ok-bg:    #EAF3EA;
+      --warn:     #7A4E10;
+      --warn-bg:  #FDF3E0;
+      --err:      #8A2020;
+      --err-bg:   #FDEAEA;
+      --muted:    #5A5A6A;
+      --muted-bg: #EEEEف5;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    header h1 { font-size: 15px; font-weight: 600; }
+    header .subtitle { font-size: 12px; color: var(--text2); }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: calc(100vh - 49px);
+    }
+
+    /* ── Form panel ── */
+    .form-panel {
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 18px 14px;
+      overflow-y: auto;
+    }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text2);
+      margin-bottom: 10px;
+    }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+    .field input, .field select {
+      width: 100%;
+      padding: 6px 9px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23967E76'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 9px center;
+      padding-right: 26px;
+    }
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .field input::placeholder { color: var(--accent2); }
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+    /* ── Layers panel ── */
+    .layers-panel { padding: 18px 20px; overflow-y: auto; }
+
+    .layer-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .layer-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+    }
+    .layer-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .layer-title { font-size: 13px; font-weight: 600; flex: 1; }
+    .layer-badge {
+      font-size: 11px; padding: 3px 8px;
+      border-radius: 4px; white-space: nowrap;
+    }
+    .layer-question {
+      font-size: 11px; color: var(--text2);
+      padding: 0 14px 10px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Status themes */
+    .s-ok    .layer-num, .s-ok    .layer-badge { background: var(--ok-bg);    color: var(--ok);   }
+    .s-warn  .layer-num, .s-warn  .layer-badge { background: var(--warn-bg);  color: var(--warn); }
+    .s-err   .layer-num, .s-err   .layer-badge { background: var(--err-bg);   color: var(--err);  }
+    .s-muted .layer-num, .s-muted .layer-badge { background: var(--bg3);      color: var(--text2);}
+
+    /* Requirement rows */
+    .layer-body { padding: 4px 14px 10px; }
+    .req {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--bg3);
+    }
+    .req:last-child { border-bottom: none; }
+
+    .req-icon {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .icon-ok     { background: var(--ok-bg);    color: var(--ok);   }
+    .icon-fail   { background: var(--err-bg);   color: var(--err);  }
+    .icon-pend   { background: var(--bg3);      color: var(--text2);}
+
+    .req-body { flex: 1; }
+    .req-text  { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .req-art   { font-size: 11px; color: var(--accent); margin-top: 2px; }
+    .req-note  { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
+    .req-fail-note { font-size: 11px; color: var(--err); margin-top: 3px; }
+    .req-remedy {
+      font-size: 11px; color: var(--text);
+      background: var(--bg3);
+      border-left: 3px solid var(--ok);
+      padding: 4px 8px;
+      margin-top: 5px;
+      border-radius: 0 4px 4px 0;
+      line-height: 1.5;
+    }
+    .req-remedy::before { content: '補救途徑　'; font-weight: 600; color: var(--ok); }
+
+    .req-ctrl { flex-shrink: 0; }
+    .req-ctrl select {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 11px;
+      padding: 3px 5px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .layer-empty {
+      font-size: 12px; color: var(--text2);
+      padding: 10px 0; font-style: italic;
+    }
+    .layer-blocked {
+      font-size: 12px; color: var(--text2);
+      padding: 10px 14px;
+      background: var(--bg3);
+      border-top: 1px solid var(--border);
+    }
+    .layer-def {
+      font-size: 12px; color: var(--text2);
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      line-height: 1.6;
+    }
+    .layer-def p { margin: 0 0 5px; }
+    .layer-def p:last-child { margin-bottom: 0; }
+    .layer-def strong { color: var(--text); }
+
+    /* ── IPNI dropdown ── */
+    .name-wrapper { position: relative; }
+    .ipni-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 4px 12px rgba(74,55,40,0.12);
+      max-height: 280px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .ipni-dropdown.open { display: block; }
+    .ipni-item {
+      padding: 8px 10px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--bg3);
+    }
+    .ipni-item:last-child { border-bottom: none; }
+    .ipni-item:hover { background: var(--bg2); }
+    .ipni-name { font-size: 13px; font-style: italic; color: var(--text); }
+    .ipni-name span { font-style: normal; color: var(--text2); }
+    .ipni-meta { font-size: 11px; color: var(--accent); margin-top: 2px; }
+    .ipni-msg { padding: 10px; font-size: 12px; color: var(--text2); }
+
+    @media (max-width: 680px) {
+      .layout { grid-template-columns: 1fr; }
+      .form-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>學名狀態檢核</h1>
+  <span class="subtitle">現生植物・馬德里法規（2024）</span>
+</header>
+
+<div class="layout">
+
+  <!-- ── Form ── -->
+  <div class="form-panel">
+    <div class="section-label">名稱資訊</div>
+
+    <div class="field">
+      <label>學名</label>
+      <div class="name-wrapper">
+        <input type="text" id="f-name" placeholder="e.g. Abelia chinensis" autocomplete="off">
+        <div class="ipni-dropdown" id="ipni-dropdown"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>作者引證</label>
+      <input type="text" id="f-author" placeholder="e.g. R.Br.">
+    </div>
+
+    <hr class="divider">
+    <div class="section-label">發表資訊</div>
+
+    <div class="field">
+      <label>發表年份</label>
+      <input type="number" id="f-year" placeholder="e.g. 1818" min="1" max="2100">
+    </div>
+    <div class="field">
+      <label>命名行為</label>
+      <select id="f-act">
+        <option value="">— 請選擇 —</option>
+        <option value="new">新分類群名稱</option>
+        <option value="comb">新組合</option>
+        <option value="stat">新位置或新階級</option>
+        <option value="nom-nov">替代名稱（nom. nov.）</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>分類階級</label>
+      <select id="f-rank">
+        <option value="">— 請選擇 —</option>
+        <option value="order">目及以上 Order and above</option>
+        <option value="family">科 Family</option>
+        <option value="subfam">亞科及族等 Subfamily / Tribe</option>
+        <option value="genus">屬 Genus</option>
+        <option value="species">種 Species</option>
+        <option value="infrasp">種下分類群 Infraspecific</option>
+      </select>
+    </div>
+    <div id="pub-info" style="display:none">
+      <hr class="divider">
+      <div class="section-label">發表文獻
+        <span style="font-size:10px;font-weight:400;color:var(--accent)">（IPNI）</span>
+      </div>
+      <div id="pub-reference" style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:8px;word-break:break-all;"></div>
+      <div id="pub-links" style="font-size:11px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;"></div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-label">媒介資訊</div>
+
+    <div class="field">
+      <label>發表媒介</label>
+      <select id="f-medium">
+        <option value="">— 請選擇 —</option>
+        <option value="print">紙本印刷</option>
+        <option value="electronic">電子（PDF）</option>
+        <option value="unknown">不確定</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ── Layers ── -->
+  <div class="layers-panel" id="layers-panel"></div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const S = {
+  name: '', author: '',
+  year: null, act: '', rank: '', medium: '',
+  suppressed: false,
+  checks: {}   // req-id → 'ok' | 'fail' | 'pend'
+};
+
+// ── Rules ──────────────────────────────────────────────────────────────────
+// Each rule: { id, text, art, note, failNote?, forced? }
+
+function layer1Rules() {
+  const { year, medium } = S;
+  const rules = [];
+
+  rules.push({
+    id:     'l1-dist',
+    text:   '出版物已公開流通（向一般大眾或具公開館藏的科學機構公開發售、交換或贈送）',
+    art:    'Art. 29.1',
+    note:   null,
+    remedy: '確認出版方式是否符合公開流通規定；若屬限定發行，需重新以符合規定的方式出版'
+  });
+
+  if (year !== null && medium === 'electronic') {
+    if (year < 2012) {
+      rules.push({
+        id:       'l1-pre2012-elec',
+        text:     '電子發表在 2012 年前不構成有效出版',
+        art:      'Art. 29.1 Note 1',
+        note:     '有效出版須依賴後續的紙本版本',
+        forced:   'fail',
+        failNote: '此名稱若僅以電子方式在 2012 年前發布，則不構成有效出版',
+        remedy:   '若有後續紙本版本，以紙本版本的發表日期為準；若無，需重新以紙本發表'
+      });
+    } else {
+      rules.push({
+        id:     'l1-pdf-issn',
+        text:   '以 PDF 格式發布於具有 ISSN 或 ISBN 的線上出版品',
+        art:    'Art. 29.1',
+        note:   '2012 年 1 月 1 日起電子發表須符合此條件',
+        remedy: '確認出版品是否已登記 ISSN 或 ISBN；若未登記，此發表不構成有效出版，需改以符合條件的媒介重新發表'
+      });
+    }
+  }
+
+  return rules;
+}
+
+function layer2Rules() {
+  const { year, act, rank } = S;
+  if (!year || !act || !rank) return [];
+  const rules = [];
+
+  // ── Pre-starting-point ─────────────────────────────────────
+  if (year < 1753) {
+    rules.push({
+      id:       'l2-pre1753',
+      text:     '此名稱發表於法規起算日期（1753 年 5 月 1 日）之前，在本法規下不具命名地位',
+      art:      'Art. 13.1',
+      note:     '現生種子植物與蕨類的起算日期為 Linnaeus, Sp. Pl.（1753 年 5 月 1 日）',
+      forced:   'fail',
+      failNote: '起算日前發表的名稱無法在本法規下取得有效發表地位',
+      remedy:   '可依據原始文獻的概念重新發表為新名稱（tax. nov.），並符合現行法規的所有要件；但不能以此名稱為基礎名（basionym）發表組合名，因為它在法規下不具命名地位'
+    });
+    return rules;
+  }
+
+  // ── New taxon ──────────────────────────────────────────────
+  if (act === 'new') {
+
+    // Description / diagnosis
+    if (year < 1935) {
+      rules.push({
+        id:     'l2-desc-any',
+        text:   '具有描述（任何語言均可）',
+        art:    'Art. 32.1',
+        note:   '1935 年前無語言限制',
+        remedy: '可由後續出版的描述補充驗證（Art. 38.1），需明確引用原始名稱及其發表處'
+      });
+    } else if (year < 2012) {
+      rules.push({
+        id:     'l2-desc-latin',
+        text:   '具有拉丁文描述或鑑別特徵（diagnosis）',
+        art:    'Art. 39.1',
+        note:   '1935 年 1 月 1 日至 2011 年 12 月 31 日間發表須符合此規定',
+        remedy: '可由後續出版的拉丁文描述補充驗證（Art. 38.1），需明確引用原始名稱及其發表處'
+      });
+    } else {
+      rules.push({
+        id:     'l2-desc-lat-en',
+        text:   '具有拉丁文或英文描述或鑑別特徵（diagnosis）',
+        art:    'Art. 39.1',
+        note:   '2012 年 1 月 1 日起英文亦可',
+        remedy: '可由後續出版的拉丁文或英文描述補充驗證（Art. 38.1），需明確引用原始名稱及其發表處'
+      });
+    }
+
+    // Type for species / infrasp
+    if (rank === 'species' || rank === 'infrasp') {
+      if (year >= 1958) {
+        rules.push({
+          id:     'l2-type-ind',
+          text:   '已明確指定或標示命名模式（holotype 或等效模式）',
+          art:    'Art. 40.1',
+          note:   '1958 年 1 月 1 日後發表的種及種下分類群須明確指定模式',
+          remedy: '此要件無法事後補救，名稱視為無效發表；若模式實際存在，需重新發表並明確指定（Art. 40.2 可查看是否有例外情形）'
+        });
+      }
+      if (year >= 2001) {
+        rules.push({
+          id:     'l2-type-spec',
+          text:   '命名模式為標本（非插圖）',
+          art:    'Art. 40.4',
+          note:   '2001 年 1 月 1 日後，模式須為標本；少數例外見 Art. 40.5',
+          remedy: '確認是否符合 Art. 40.5 的例外情形（無維管束植物等）；否則名稱無效，需以標本為模式重新發表'
+        });
+      }
+      if (year >= 2012) {
+        rules.push({
+          id:     'l2-type-inst',
+          text:   '已標明模式標本的保存機構',
+          art:    'Art. 40.7',
+          note:   '2012 年 1 月 1 日後須在發表文獻中標明保存機構',
+          remedy: '名稱無效；需補充保存機構資訊後重新發表，或由他人發表補充說明並明確引用原始發表'
+        });
+      }
+    }
+
+    // Type for genus
+    if (rank === 'genus' && year >= 1908) {
+      rules.push({
+        id:     'l2-type-sp',
+        text:   '已指定或可確定模式種（type species）',
+        art:    'Art. 37.1',
+        note:   '1908 年起，屬名須有可確定的模式種',
+        remedy: '名稱無效；需重新發表並明確指定模式種，或確認是否有隱含可確定模式種的情形（Art. 37.2–4）'
+      });
+    }
+
+    // Type for subfamily / tribe
+    if (rank === 'subfam') {
+      rules.push({
+        id:   'l2-type-gen-subfam',
+        text: '具有或可確定命名模式屬（亞科及族的模式為屬名）',
+        art:  'Art. 19.3–4',
+        note: '亞科及族的名稱以命名模式屬的名稱語幹加上相應詞尾構成（-oideae、-eae、-inae 等）'
+      });
+    }
+
+    // Type for family
+    if (rank === 'family') {
+      rules.push({
+        id:   'l2-type-gen',
+        text: '具有或可確定模式屬（type genus）',
+        art:  'Art. 18.1',
+        note: null
+      });
+    }
+
+    // Order and above
+    if (rank === 'order') {
+      rules.push({
+        id:   'l2-order-auto',
+        text: '【特殊規定】若此名稱由所含的科名或屬名衍生（描述性名稱），則隨該科名或屬名的有效發表而自動有效發表，上方的描述／鑑別特徵要件不適用',
+        art:  'Art. 16.1',
+        note: '請先確認此名稱是否屬於描述性名稱；若是，則本層的有效發表判斷須另行處理'
+      });
+      rules.push({
+        id:   'l2-type-order',
+        text: '具有或可確定命名模式（所含下一階級的名稱，非標本）',
+        art:  'Art. 16.2, 17',
+        note: '目及以上的命名模式為名稱，不是標本'
+      });
+    }
+  }
+
+  // ── New combination / new status ──────────────────────────
+  if (act === 'comb' || act === 'stat') {
+    rules.push({
+      id:       'l2-bas-name',
+      text:     '完整引用基礎名（basionym）的名稱',
+      art:      'Art. 41.5',
+      note:     '須引用基礎名的完整名稱（含階級指示詞）',
+      failNote: '未引用基礎名的組合名或新地位名不構成有效發表',
+      remedy:   '可由後續發表補充引用基礎名並明確引用本名稱的原始發表處（Art. 41.5）；或重新發表並完整引用'
+    });
+    if (year >= 1953) {
+      rules.push({
+        id:       'l2-bas-author',
+        text:     '引用基礎名的作者引證及原始發表處',
+        art:      'Art. 41.5',
+        note:     '1953 年 1 月 1 日後須同時引用作者及發表處',
+        failNote: '缺少作者引證或發表處的組合名不構成有效發表',
+        remedy:   '可由後續發表補充完整的作者引證及發表處，並明確引用本名稱的原始發表處（Art. 41.5）；或重新發表並完整引用'
+      });
+    }
+  }
+
+  // ── Replacement name ──────────────────────────────────────
+  if (act === 'nom-nov') {
+    rules.push({
+      id:       'l2-rep-ref',
+      text:     '完整引用被替代名稱（replaced synonym）',
+      art:      'Art. 41.5',
+      note:     '須引用被替代名稱的名稱本身、作者引證及原始發表處',
+      failNote: '未引用被替代名稱的替代名不構成有效發表',
+      remedy:   '可由後續發表補充引用被替代名稱及其原始發表處，並明確引用本替代名的原始發表（Art. 41.5）；或直接重新發表並完整引用'
+    });
+  }
+
+  return rules;
+}
+
+function layer3Rules() {
+  const rules = [];
+  if (S.suppressed) {
+    rules.push({
+      id:       'l3-suppressed',
+      text:     '【IPNI】此名稱已被壓制（suppressed）',
+      art:      'Art. 56',
+      note:     'IPNI 記錄標記為 suppressed，表示此名稱依法規被壓制，不得作為合法名稱使用',
+      forced:   'fail',
+      failNote: '被壓制的名稱不具合法性，不得採用',
+      remedy:   '可向命名委員會（Nomenclature Committee）提案撤銷壓制決定（Art. 56.3），但案例極為罕見且程序繁複'
+    });
+    return rules;
+  }
+  return [
+    {
+      id:     'l3-homonym',
+      text:   '無早出同名（earlier homonym）',
+      art:    'Art. 53',
+      note:   '建議查閱 IPNI 或 Tropicos，搜尋相同拼寫的早期名稱',
+      remedy: '發表替代名（nomen novum, nom. nov.，Art. 58）以取代此不合法名稱，或向命名委員會申請保留（Art. 14, App. II）'
+    },
+    {
+      id:     'l3-superfl',
+      text:   '發表時並非多餘名稱（superfluous name）',
+      art:    'Art. 52',
+      note:   '發表時若已明確包含合法名稱的模式，該名稱即為多餘名稱',
+      remedy: '通常無法補救；可向命名委員會申請保留（Art. 14, App. II），但此類申請案例甚少獲准'
+    },
+    {
+      id:     'l3-conserv',
+      text:   '無保留名、廢棄名或特殊規定的競爭關係',
+      art:    'Art. 14–15',
+      note:   '可查閱 Appendix II–IV 的保留名清單',
+      remedy: '若此名稱受廢棄名（nomen rejiciendum）或保留名壓制，通常應直接採用保留名；若本名稱廣泛使用且有保留價值，可向命名委員會申請（Art. 14）'
+    }
+  ];
+}
+
+// ── Status ──────────────────────────────────────────────────────────────────
+function layerStatus(rules) {
+  if (rules.length === 0) return 'na';
+  let fail = false, pend = false;
+  for (const r of rules) {
+    if (r.forced === 'fail') return 'fail';
+    const c = S.checks[r.id] || 'pend';
+    if (c === 'fail') fail = true;
+    if (c === 'pend') pend = true;
+  }
+  if (fail) return 'fail';
+  if (pend) return 'warn';
+  return 'ok';
+}
+
+function layer4Rules() {
+  return [
+    {
+      id:     'l4-priority',
+      text:   '不存在更早合法發表的命名異名',
+      art:    'Art. 11.1',
+      note:   '若此名稱有共享相同命名模式的較早名稱，應優先採用較早者',
+      remedy: '採用較早的合法名稱；若本名稱使用已十分廣泛，可向命名委員會申請保留（Art. 14, App. II）'
+    },
+    {
+      id:     'l4-circumscription',
+      text:   '在採用的分類處理下，此分類群未被併入其他分類群',
+      art:    'Art. 11.1',
+      note:   '採用較廣的分類概念將本分類群合併至他處時，此名稱會成為分類異名，需查閱相關修訂文獻確認',
+      remedy: '採用所在分類群在該分類處理下的正確名稱；此情況不涉及法規補救，屬分類判斷的範疇'
+    },
+    {
+      id:     'l4-rank',
+      text:   '名稱在目前採用的階級下仍然適用',
+      art:    'Art. 11.4',
+      note:   '分類群升降階時正確名稱可能隨之改變',
+      remedy: '依新的階級，在該名稱群中確認優先的合法名稱，必要時發表新的組合名（comb. nov.）或新地位名（stat. nov.）'
+    },
+  ];
+}
+
+// ── Render ──────────────────────────────────────────────────────────────────
+const STATUS = {
+  ok:   { badge: '已確認符合',         sym: '✓', cls: 's-ok'    },
+  warn: { badge: '待查：尚缺某項確認', sym: '?', cls: 's-warn'  },
+  fail: { badge: '確認不符合',         sym: '✕', cls: 's-err'   },
+  na:   { badge: '需要填入更多資訊',   sym: '—', cls: 's-muted' },
+  blocked: { badge: '尚無法判斷',      sym: '—', cls: 's-muted' },
+  ctx:  { badge: '尚未設定分類情境',   sym: '—', cls: 's-muted' },
+};
+
+function iconHtml(id, forced) {
+  if (forced === 'fail') return `<div class="req-icon icon-fail">✕</div>`;
+  const c = S.checks[id] || 'pend';
+  if (c === 'ok')   return `<div class="req-icon icon-ok">✓</div>`;
+  if (c === 'fail') return `<div class="req-icon icon-fail">✕</div>`;
+  return `<div class="req-icon icon-pend">?</div>`;
+}
+
+function ctrlHtml(id, forced) {
+  if (forced) return '';
+  const c = S.checks[id] || 'pend';
+  return `<div class="req-ctrl">
+    <select data-id="${id}">
+      <option value="pend" ${c==='pend'?'selected':''}>待查</option>
+      <option value="ok"   ${c==='ok'  ?'selected':''}>確認符合</option>
+      <option value="fail" ${c==='fail'?'selected':''}>確認不符合</option>
+    </select>
+  </div>`;
+}
+
+function renderCard(num, question, title, rules, status, blocked, preamble = '') {
+  const sc = STATUS[status] || STATUS.na;
+
+  let body = '';
+  if (blocked) {
+    body = `<div class="layer-blocked">↑ 請先確認上一層無不符合項目</div>`;
+  } else if (rules.length === 0) {
+    body = `<div class="layer-body"><div class="layer-empty">請填入發表資訊以展開檢核項目</div></div>`;
+  } else {
+    const rows = rules.map(r => `
+      <div class="req">
+        ${iconHtml(r.id, r.forced)}
+        <div class="req-body">
+          <div class="req-text">${r.text}</div>
+          ${r.art  ? `<div class="req-art">${r.art}</div>` : ''}
+          ${r.note ? `<div class="req-note">${r.note}</div>` : ''}
+          ${r.forced === 'fail' && r.failNote ? `<div class="req-fail-note">${r.failNote}</div>` : ''}
+          ${(r.forced === 'fail' || S.checks[r.id] === 'fail') && r.remedy ? `<div class="req-remedy">${r.remedy}</div>` : ''}
+        </div>
+        ${ctrlHtml(r.id, r.forced)}
+      </div>`).join('');
+    body = (preamble ? `<div class="layer-def">${preamble}</div>` : '') +
+           `<div class="layer-body">${rows}</div>`;
+  }
+
+  return `
+    <div class="layer-card ${sc.cls}">
+      <div class="layer-header">
+        <div class="layer-num">${sc.sym}</div>
+        <div class="layer-title">${num} ${title}</div>
+        <div class="layer-badge">${sc.badge}</div>
+      </div>
+      <div class="layer-question">${question}</div>
+      ${body}
+    </div>`;
+}
+
+function render() {
+  const r1 = layer1Rules();
+  const r2 = layer2Rules();
+  const r3 = layer3Rules();
+
+  const s1 = layerStatus(r1);
+  const s2 = r2.length === 0 ? 'na' : layerStatus(r2);
+  const blocked3 = s1 === 'fail' || s2 === 'fail';
+  const s3 = blocked3 ? 'blocked' : layerStatus(r3);
+  const blocked4 = blocked3 || s3 === 'fail';
+  const r4 = blocked4 ? [] : layer4Rules();
+  const s4 = blocked4 ? 'blocked' : layerStatus(r4);
+
+  const preamble4 = `
+    <p>一個名稱是否為<strong>正確名稱</strong>（correct name），取決於分類界定、所在位置與階級三個前提，前提不同正確名稱也可能不同。</p>
+    <p><strong>命名異名</strong>（nomenclatural synonym）即<strong>同模式異名</strong>（homotypic synonym）：具有相同命名模式的不同名稱，最早合法發表者具有優先權，異名關係由法規直接決定，無爭議空間。</p>
+    <p><strong>分類異名</strong>（taxonomic synonym）通常即<strong>異模式異名</strong>（heterotypic synonym）：分類學者將不同模式的分類群合併處理所產生的異名，不同作者間的判斷可能不一致。</p>`;
+
+  document.getElementById('layers-panel').innerHTML = [
+    renderCard('①', '發表媒介與方式是否符合適用規定？',
+      '有效出版／發行', r1, s1, false),
+    renderCard('②', '該命名行為所需的要件是否齊備？',
+      '有效發表', r2, s2, false),
+    renderCard('③', '是否涉及同名、發表時多餘等問題，以及適用的特殊規定？',
+      '合法性', r3, blocked3 ? 'blocked' : s3, blocked3),
+    renderCard('④', '在採用的分類處理下，此名稱是否為應採用的正確名稱？',
+      '正確名稱', r4, blocked4 ? 'blocked' : s4, blocked4, preamble4),
+  ].join('');
+
+  document.querySelectorAll('.req-ctrl select').forEach(sel => {
+    sel.addEventListener('change', e => {
+      S.checks[e.target.dataset.id] = e.target.value;
+      render();
+    });
+  });
+}
+
+// ── IPNI search ──────────────────────────────────────────────────────────────
+const RANK_MAP = {
+  // abbreviated forms returned by IPNI API
+  'spec.': 'species',
+  'var.': 'infrasp', 'subsp.': 'infrasp', 'f.': 'infrasp',
+  'subvar.': 'infrasp', 'subf.': 'infrasp',
+  'gen.': 'genus',
+  'fam.': 'family',
+  'subfam.': 'subfam', 'trib.': 'subfam', 'subtrib.': 'subfam',
+  'ord.': 'order', 'subord.': 'order',
+  'cl.': 'order', 'subcl.': 'order',
+  'div.': 'order', 'subdiv.': 'order',
+  // full uppercase forms (fallback)
+  SPECIES: 'species',
+  VARIETY: 'infrasp', SUBSPECIES: 'infrasp', FORMA: 'infrasp',
+  GENUS: 'genus', FAMILY: 'family',
+  SUBFAMILY: 'subfam', TRIBE: 'subfam', SUBTRIBE: 'subfam',
+  ORDER: 'order', CLASS: 'order', DIVISION: 'order',
+};
+
+let ipniTimer = null;
+const dropdown = document.getElementById('ipni-dropdown');
+
+function ipniDropdown(html) {
+  dropdown.innerHTML = html;
+  dropdown.classList.add('open');
+}
+function ipniClose() {
+  dropdown.classList.remove('open');
+  dropdown.innerHTML = '';
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#f-name') && !e.target.closest('#ipni-dropdown')) ipniClose();
+});
+
+async function ipniSearch(q) {
+  try {
+    const res = await fetch(
+      `https://www.ipni.org/api/1/search?q=${encodeURIComponent(q)}&perPage=8`
+    );
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const results = data.results || [];
+    if (results.length === 0) {
+      ipniDropdown('<div class="ipni-msg">無符合結果</div>');
+      return;
+    }
+    dropdown._results = results;
+    ipniDropdown(results.map((r, i) => {
+      const ref = r.referenceRemarks ? ` · ${r.referenceRemarks}` : '';
+      return `<div class="ipni-item" data-i="${i}">
+        <div class="ipni-name">${r.name || ''} <span>${r.authors || ''}</span></div>
+        <div class="ipni-meta">${r.rank || ''} · ${r.publicationYear || '?'}${ref}</div>
+      </div>`;
+    }).join(''));
+    dropdown.querySelectorAll('.ipni-item').forEach(el =>
+      el.addEventListener('click', () => ipniSelect(dropdown._results[+el.dataset.i]))
+    );
+  } catch(e) {
+    const cors = e.message.toLowerCase().includes('fetch') || e instanceof TypeError;
+    ipniDropdown(`<div class="ipni-msg">${
+      cors
+        ? '無法連線：請透過 server.py 開啟此頁面<br><code>python3 server.py</code><br>→ http://localhost:7777/name_checker.html'
+        : '錯誤：' + e.message
+    }</div>`);
+  }
+}
+
+const CITE_TYPE_MAP = {
+  'tax. nov.': 'new',
+  'comb. nov.': 'comb',
+  'nom. nov.': 'nom-nov',
+  'stat. nov.': 'stat',
+};
+
+function ipniSelect(r) {
+  document.getElementById('f-name').value   = r.name    || '';
+  document.getElementById('f-author').value = r.authors || '';
+  const yr = parseInt(r.publicationYear);
+  if (!isNaN(yr)) document.getElementById('f-year').value = yr;
+  const rankVal = RANK_MAP[r.rank];
+  if (rankVal) document.getElementById('f-rank').value = rankVal;
+
+  // Use citationType for reliable act inference
+  const ct = (r.citationType || '').trim().toLowerCase();
+  const actVal = CITE_TYPE_MAP[Object.keys(CITE_TYPE_MAP).find(k => ct.includes(k.toLowerCase())) || ''];
+  if (actVal) {
+    document.getElementById('f-act').value = actVal;
+  } else if (r.basionymId) {
+    document.getElementById('f-act').value = 'comb';
+  } else if ((r.nomenclaturalRemarks || '').toLowerCase().includes('nom. nov')) {
+    document.getElementById('f-act').value = 'nom-nov';
+  }
+
+  // Show publication info panel
+  const pubInfo = document.getElementById('pub-info');
+  const ref = r.reference || '';
+  const lp  = r.linkedPublication || {};
+
+  if (ref || lp.title) {
+    document.getElementById('pub-reference').textContent = ref || lp.abbreviation || '';
+
+    const linksEl = document.getElementById('pub-links');
+    linksEl.innerHTML = '';
+
+    if (lp.title) {
+      const span = document.createElement('span');
+      span.style.cssText = 'color:var(--text2);font-size:11px;flex-basis:100%;margin-bottom:2px;';
+      span.textContent = lp.title;
+      linksEl.appendChild(span);
+    }
+    if (lp.date) {
+      const span = document.createElement('span');
+      span.style.cssText = 'background:var(--bg3);border-radius:3px;padding:1px 6px;color:var(--text2);';
+      span.textContent = lp.date;
+      linksEl.appendChild(span);
+    }
+    if (lp.tl2Author) {
+      const span = document.createElement('span');
+      span.style.cssText = 'background:var(--bg3);border-radius:3px;padding:1px 6px;color:var(--text2);';
+      span.textContent = 'TL2: ' + lp.tl2Author + (lp.tl2Number ? ' #' + lp.tl2Number : '');
+      linksEl.appendChild(span);
+    }
+    if (lp.bhlPageLink) {
+      const a = document.createElement('a');
+      a.href = lp.bhlPageLink;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = 'BHL';
+      a.style.cssText = 'background:var(--accent);color:#fff;border-radius:3px;padding:1px 6px;text-decoration:none;font-size:11px;';
+      linksEl.appendChild(a);
+    }
+
+    pubInfo.style.display = '';
+  } else {
+    pubInfo.style.display = 'none';
+  }
+
+  S.suppressed = r.suppressed === true;
+
+  ipniClose();
+  sync();
+}
+
+// ── Inputs ──────────────────────────────────────────────────────────────────
+function sync() {
+  S.name   = document.getElementById('f-name').value.trim();
+  S.author = document.getElementById('f-author').value.trim();
+  const y  = parseInt(document.getElementById('f-year').value);
+  S.year   = isNaN(y) ? null : y;
+  S.act    = document.getElementById('f-act').value;
+  S.rank   = document.getElementById('f-rank').value;
+  S.medium = document.getElementById('f-medium').value;
+  render();
+}
+
+document.getElementById('f-name').addEventListener('input', function() {
+  const q = this.value.trim();
+  clearTimeout(ipniTimer);
+  S.suppressed = false;  // reset when user edits manually
+  document.getElementById('pub-info').style.display = 'none';
+  if (q.length >= 3) {
+    ipniDropdown('<div class="ipni-msg">搜尋中…</div>');
+    ipniTimer = setTimeout(() => ipniSearch(q), 400);
+  } else {
+    ipniClose();
+  }
+  sync();
+});
+
+['f-author','f-year','f-act','f-rank','f-medium'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', sync);
+  el.addEventListener('change', sync);
+});
+
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+</script>
+</body>
+</html>
