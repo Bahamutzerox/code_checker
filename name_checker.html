@@ -245,6 +245,18 @@
       .layout { grid-template-columns: 1fr; }
       .form-panel { border-right: none; border-bottom: 1px solid var(--border); }
     }
+
+    footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text2);
+      padding: 18px 16px 24px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      line-height: 1.7;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -909,5 +921,10 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
 </script>
+
+<footer>
+  法規條文依據 <a href="https://www.iapt-taxon.org/nomen/main.php" target="_blank" rel="noopener">International Code of Nomenclature for algae, fungi, and plants (Madrid Code, 2024)</a>，
+  由 IAPT 依 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> 授權。
+</footer>
 </body>
 </html>
