@@ -111,7 +111,7 @@
     width: 100%;
     height: 100%;
     cursor: grab;
-    background: #FAFAF6;
+    background: #FFEFC4;
   }
   #graph:active { cursor: grabbing; }
 
@@ -308,8 +308,8 @@
 
   /* ── SVG styles ── */
   .node circle { transition: opacity 0.2s; }
-  .node.is-parent circle { stroke-width: 2; }
-  .node.is-sub   circle { stroke-width: 1; }
+  .node.is-parent circle { stroke-width: 0; }
+  .node.is-sub   circle { stroke-width: 0; }
   .node text {
     font-size: 9px;
     fill: #1A3A50;
@@ -350,23 +350,23 @@
   <div class="filter-group">
     <label class="filter-label">
       <input type="checkbox" id="cb-article" checked>
-      <span class="dot" style="background:#00E5CC"></span>條款 (Art.)
+      <span class="dot" style="background:#4D8DBA"></span>條款 (Art.)
     </label>
     <label class="filter-label">
       <input type="checkbox" id="cb-rec" checked>
-      <span class="dot" style="background:#9966FF"></span>擬則 (Rec.)
+      <span class="dot" style="background:#7A5AAA"></span>擬則 (Rec.)
     </label>
     <label class="filter-label">
       <input type="checkbox" id="cb-F" checked>
-      <span class="dot" style="background:#FF9900;border:1px solid #CC7700"></span>Chapter F
+      <span class="dot" style="background:#B8942E"></span>Chapter F
     </label>
     <label class="filter-label">
       <input type="checkbox" id="cb-H" checked>
-      <span class="dot" style="background:#4499FF"></span>Chapter H
+      <span class="dot" style="background:#086288"></span>Chapter H
     </label>
     <label class="filter-label">
       <input type="checkbox" id="cb-parents" checked>
-      <span class="dot" style="background:#3A3A6A;border:2px solid #00E5CC"></span>父節點
+      <span class="dot" style="background:#0A2F45"></span>父節點
     </label>
     <label class="filter-label">
       <input type="checkbox" id="cb-hier" checked>
@@ -402,11 +402,11 @@
       </defs>
     </svg>
     <div id="legend">
-      <div class="leg-row"><span class="dot" style="background:#00E5CC"></span> 條款 (Art.) 子條款</div>
-      <div class="leg-row"><span class="dot" style="background:#9966FF"></span> 擬則 (Rec.) 子條款</div>
-      <div class="leg-row"><span class="dot" style="background:#FF9900;border:1px solid #CC7700"></span> Chapter F</div>
-      <div class="leg-row"><span class="dot" style="background:#4499FF"></span> Chapter H</div>
-      <div class="leg-row"><span class="dot" style="background:#3A3A6A;border:2px solid #00E5CC;width:14px;height:14px;border-radius:50%"></span> 父節點（條款標題）</div>
+      <div class="leg-row"><span class="dot" style="background:#4D8DBA"></span> 條款 (Art.) 子條款</div>
+      <div class="leg-row"><span class="dot" style="background:#7A5AAA"></span> 擬則 (Rec.) 子條款</div>
+      <div class="leg-row"><span class="dot" style="background:#B8942E"></span> Chapter F</div>
+      <div class="leg-row"><span class="dot" style="background:#086288"></span> Chapter H</div>
+      <div class="leg-row"><span class="dot" style="background:#0A2F45;width:14px;height:14px;border-radius:50%"></span> 父節點（條款標題）</div>
       <div class="leg-row" style="margin-top:4px">
         <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#9BBCCC" stroke-width="1.5"/></svg>
         交叉引用
@@ -469,13 +469,12 @@ const GRAPH_DATA = {"nodes":[{"id":"ART_1","label":"Art. 1","type":"article","nu
 
 // ── Color ──────────────────────────────────────────────────────────────────
 function nodeColor(d) {
-  if (d.chapter === 'F') return '#C86800';
-  if (d.chapter === 'H') return '#1B5FAF';
-  return d.type === 'article' ? '#00E5CC' : '#9966FF';
+  if (d.chapter === 'F') return '#B8942E';
+  if (d.chapter === 'H') return '#086288';
+  return d.type === 'article' ? '#4D8DBA' : '#7A5AAA';
 }
 function nodeStroke(d) {
-  return d.is_sub ? d3.color(nodeColor(d)).darker(0.4)
-                  : '#155E8A';      // parent nodes get a darker border
+  return 'none';
 }
 function nodeR(d) {
   if (!d.is_sub) return Math.max(9, Math.min(20, 9 + (d.degree || 0) * 0.4));
@@ -584,7 +583,7 @@ nodeSel.append('circle')
   .attr('r', nodeR)
   .attr('fill', nodeColor)
   .attr('stroke', nodeStroke)
-  .attr('stroke-width', d => d.is_sub ? 1 : 2);
+  .attr('stroke-width', () => 0);
 
 nodeSel.append('text')
   .text(d => d.label)
@@ -648,7 +647,7 @@ function selectNode(id) {
       if (d.id===id) return '#0A2F45';
       return nodeStroke(d);
     })
-    .attr('stroke-width', d => d.id===id ? 3 : d.is_sub ? 1 : 2);
+    .attr('stroke-width', d => d.id===id ? 2 : 0);
 
   nodeSel.selectAll('text')
     .attr('opacity', d => d.id===id || neighbors.has(d.id) ? 1 : 0.04);
@@ -997,7 +996,7 @@ function applyVisibility() {
       return 1;
     })
     .attr('stroke', d => hl && nodeHighlighted(d) ? '#C86800' : nodeStroke(d))
-    .attr('stroke-width', d => hl && nodeHighlighted(d) ? 3 : d.is_sub ? 1 : 2);
+    .attr('stroke-width', d => hl && nodeHighlighted(d) ? 2 : 0);
 
   nodeSel.selectAll('text')
     .attr('opacity', d => {
