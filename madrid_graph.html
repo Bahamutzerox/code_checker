@@ -9,8 +9,8 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #0C0C14;
-    color: #D8D8FF;
+    background: #FFEFC4;
+    color: #0A2F45;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -23,15 +23,15 @@
     align-items: center;
     gap: 12px;
     padding: 8px 16px;
-    background: #121220;
-    border-bottom: 1px solid #2A2A48;
+    background: #FFF7E0;
+    border-bottom: 1px solid #C9A84C;
     flex-shrink: 0;
     flex-wrap: wrap;
   }
   #toolbar h1 {
     font-size: 13px;
     font-weight: 600;
-    color: #8888BB;
+    color: #086288;
     white-space: nowrap;
     margin-right: 4px;
   }
@@ -41,14 +41,14 @@
     max-width: 280px;
     padding: 5px 10px;
     border-radius: 6px;
-    border: 1px solid #3A3A6A;
-    background: #0C0C14;
-    color: #D8D8FF;
+    border: 1px solid #C9A84C;
+    background: #FFEFC4;
+    color: #0A2F45;
     font-size: 13px;
     outline: none;
   }
-  #search:focus { border-color: #00E5CC; }
-  #search::placeholder { color: #6666AA; }
+  #search:focus { border-color: #086288; }
+  #search::placeholder { color: #4D8DBA; }
 
   .filter-group {
     display: flex;
@@ -63,9 +63,9 @@
     font-size: 12px;
     cursor: pointer;
     user-select: none;
-    color: #8888BB;
+    color: #086288;
   }
-  .filter-label input { cursor: pointer; accent-color: #00E5CC; }
+  .filter-label input { cursor: pointer; accent-color: #086288; }
   .dot {
     width: 10px; height: 10px;
     border-radius: 50%;
@@ -76,22 +76,22 @@
   #btn-reset {
     padding: 4px 12px;
     border-radius: 5px;
-    border: 1px solid #3A3A6A;
-    background: #1A1A2E;
-    color: #8888BB;
+    border: 1px solid #C9A84C;
+    background: #F0E4B0;
+    color: #086288;
     font-size: 12px;
     cursor: pointer;
   }
-  #btn-reset:hover { background: #2A2A48; }
+  #btn-reset:hover { background: #E8D8A0; }
 
   #stats {
     font-size: 11px;
-    color: #6666AA;
+    color: #4D8DBA;
     white-space: nowrap;
   }
 
-  .sr-item.sr-sub { padding-left: 26px; background: #0C0C14; }
-  .sr-item.sr-sub .sr-label { font-weight: 500; color: #8888BB; font-size: 12px; }
+  .sr-item.sr-sub { padding-left: 26px; background: #FFEFC4; }
+  .sr-item.sr-sub .sr-label { font-weight: 500; color: #086288; font-size: 12px; }
 
   /* ── Main area ── */
   #main {
@@ -119,12 +119,12 @@
     position: absolute;
     bottom: 16px;
     left: 16px;
-    background: rgba(18,18,32,0.95);
-    border: 1px solid #2A2A48;
+    background: rgba(255,247,224,0.95);
+    border: 1px solid #C9A84C;
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 11px;
-    color: #8888BB;
+    color: #086288;
     backdrop-filter: blur(4px);
     pointer-events: none;
   }
@@ -144,8 +144,8 @@
     width: 320px;
     max-height: 100%;
     overflow-y: auto;
-    background: #121220;
-    border-right: 1px solid #2A2A48;
+    background: #FFF7E0;
+    border-right: 1px solid #C9A84C;
     z-index: 10;
     box-shadow: 2px 0 8px rgba(0,0,0,0.08);
     display: none;
@@ -154,32 +154,32 @@
     padding: 10px 14px 6px;
     font-size: 11px;
     font-weight: 600;
-    color: #00E5CC;
+    color: #086288;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid #1A1A2E;
+    border-bottom: 1px solid #DECE98;
     position: sticky;
     top: 0;
-    background: #121220;
+    background: #FFF7E0;
   }
   .sr-item {
     padding: 10px 14px;
-    border-bottom: 1px solid #1A1A2E;
+    border-bottom: 1px solid #DECE98;
     cursor: pointer;
   }
-  .sr-item:hover { background: #1A1A2E; }
-  .sr-label { font-weight: 600; font-size: 13px; color: #D8D8FF; }
-  .sr-title { font-size: 11px; color: #00E5CC; margin-bottom: 4px; }
-  .sr-snippet { font-size: 12px; color: #8888BB; line-height: 1.5; }
+  .sr-item:hover { background: #F0E4B0; }
+  .sr-label { font-weight: 600; font-size: 13px; color: #0A2F45; }
+  .sr-title { font-size: 11px; color: #086288; margin-bottom: 4px; }
+  .sr-snippet { font-size: 12px; color: #086288; line-height: 1.5; }
   .sr-snippet mark { background: #332200; border-radius: 2px; padding: 0 2px; font-style: normal; }
-  .sr-empty { padding: 16px; color: #6666AA; font-size: 13px; text-align: center; }
+  .sr-empty { padding: 16px; color: #4D8DBA; font-size: 13px; text-align: center; }
 
   /* ── Side panel ── */
   #side-panel {
     width: 0;
     overflow: hidden;
-    background: #121220;
-    border-left: 1px solid #2A2A48;
+    background: #FFF7E0;
+    border-left: 1px solid #C9A84C;
     display: flex;
     flex-direction: column;
     transition: width 0.25s ease;
@@ -189,7 +189,7 @@
 
   #panel-header {
     padding: 14px 16px 10px;
-    border-bottom: 1px solid #2A2A48;
+    border-bottom: 1px solid #C9A84C;
     flex-shrink: 0;
     display: flex;
     justify-content: space-between;
@@ -199,32 +199,32 @@
   #panel-label {
     font-size: 17px;
     font-weight: 700;
-    color: #8888BB;
+    color: #086288;
     line-height: 1.2;
   }
   #panel-title {
     font-size: 12px;
-    color: #00E5CC;
+    color: #086288;
     margin-top: 3px;
   }
   #btn-close {
     background: none;
     border: none;
-    color: #6666AA;
+    color: #4D8DBA;
     font-size: 18px;
     cursor: pointer;
     line-height: 1;
     padding: 2px 4px;
     flex-shrink: 0;
   }
-  #btn-close:hover { color: #D8D8FF; }
+  #btn-close:hover { color: #0A2F45; }
 
   #panel-badges {
     padding: 8px 16px;
     display: flex;
     gap: 8px;
     flex-shrink: 0;
-    border-bottom: 1px solid #1A1A2E;
+    border-bottom: 1px solid #DECE98;
     flex-wrap: wrap;
   }
   .badge {
@@ -236,17 +236,17 @@
     transition: opacity 0.15s;
   }
   .badge:hover { opacity: 0.75; }
-  .badge-in     { background: #1A000F; color: #FF3068; border: 1px solid #882244; }
-  .badge-out    { background: #001A10; color: #00FF8C; border: 1px solid #224422; }
-  .badge-parent { background: #1A1A2E; color: #8888BB; border: 1px solid #3A3A6A; }
-  .badge-children { background: #0A1020; color: #5599CC; border: 1px solid #224466; }
+  .badge-in     { background: #FDEAEA; color: #C01020; border: 1px solid #F5A0B0; }
+  .badge-out    { background: #D5EFE0; color: #1A7D3C; border: 1px solid #80C895; }
+  .badge-parent { background: #F0E4B0; color: #086288; border: 1px solid #C9A84C; }
+  .badge-children { background: #E8F4FF; color: #086288; border: 1px solid #86B4D4; }
 
   #panel-body {
     flex: 1;
     overflow-y: auto;
     padding: 12px 16px;
     scrollbar-width: thin;
-    scrollbar-color: #3A3A6A transparent;
+    scrollbar-color: #C9A84C transparent;
   }
 
   .conn-section { margin-bottom: 14px; }
@@ -254,19 +254,19 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #6666AA;
+    color: #4D8DBA;
     margin-bottom: 6px;
     padding-bottom: 4px;
-    border-bottom: 1px solid #1A1A2E;
+    border-bottom: 1px solid #DECE98;
   }
   .conn-list { list-style: none; }
   .conn-list li {
     padding: 4px 0;
-    border-bottom: 1px solid #1A1A2E;
+    border-bottom: 1px solid #DECE98;
   }
   .conn-list li:last-child { border-bottom: none; }
   .conn-link {
-    color: #8888BB;
+    color: #086288;
     text-decoration: none;
     font-size: 12px;
     display: flex;
@@ -274,36 +274,36 @@
     align-items: center;
     gap: 6px;
   }
-  .conn-link:hover { color: #D8D8FF; }
+  .conn-link:hover { color: #0A2F45; }
   .conn-link .conn-node-label { font-weight: 600; flex-shrink: 0; }
-  .conn-link .conn-node-title { color: #6666AA; font-size: 11px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+  .conn-link .conn-node-title { color: #4D8DBA; font-size: 11px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
   .full-text-section { margin-top: 12px; }
   .full-text-section h3 {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #6666AA;
+    color: #4D8DBA;
     margin-bottom: 8px;
     padding-bottom: 4px;
-    border-bottom: 1px solid #1A1A2E;
+    border-bottom: 1px solid #DECE98;
   }
   #panel-fulltext {
     font-size: 12px;
     line-height: 1.7;
-    color: #D8D8FF;
+    color: #0A2F45;
     white-space: normal;
     word-break: break-word;
   }
-  #panel-fulltext strong { color: #D8D8FF; }
-  #panel-fulltext em     { color: #8888BB; font-style: italic; }
+  #panel-fulltext strong { color: #0A2F45; }
+  #panel-fulltext em     { color: #086288; font-style: italic; }
   #panel-fulltext .xref-link {
-    color: #8888BB;
+    color: #086288;
     text-decoration: underline;
     cursor: pointer;
     font-weight: 500;
   }
-  #panel-fulltext .xref-link:hover { color: #D8D8FF; }
+  #panel-fulltext .xref-link:hover { color: #0A2F45; }
 
   /* ── SVG styles ── */
   .node circle { transition: opacity 0.2s; }
@@ -311,12 +311,12 @@
   .node.is-sub   circle { stroke-width: 1; }
   .node text {
     font-size: 9px;
-    fill: #8888BB;
+    fill: #086288;
     pointer-events: none;
     text-anchor: middle;
     dominant-baseline: hanging;
   }
-  .node.is-parent text { font-size: 10px; font-weight: 600; fill: #4A3028; }
+  .node.is-parent text { font-size: 10px; font-weight: 600; fill: #0A2F45; }
   .link { fill: none; stroke-linecap: round; }
   .link.xref { transition: opacity 0.2s, stroke-width 0.2s; }
   .link.hier  { stroke-dasharray: 3 3; pointer-events: none; }
@@ -324,21 +324,21 @@
   /* ── Tooltip ── */
   #tooltip {
     position: fixed;
-    background: rgba(253,248,245,0.97);
-    border: 1px solid #3A3A6A;
+    background: rgba(255,247,224,0.97);
+    border: 1px solid #C9A84C;
     border-radius: 6px;
     padding: 7px 11px;
     font-size: 12px;
-    color: #D8D8FF;
+    color: #0A2F45;
     pointer-events: none;
     max-width: 260px;
     line-height: 1.4;
     display: none;
     z-index: 100;
-    box-shadow: 0 2px 8px rgba(100,70,60,0.12);
+    box-shadow: 0 2px 8px rgba(8,98,136,0.12);
   }
-  #tooltip .tt-label { font-weight: 700; color: #8888BB; }
-  #tooltip .tt-title  { color: #6666AA; font-size: 11px; }
+  #tooltip .tt-label { font-weight: 700; color: #086288; }
+  #tooltip .tt-title  { color: #4D8DBA; font-size: 11px; }
 </style>
 </head>
 <body>
@@ -369,7 +369,7 @@
     </label>
     <label class="filter-label">
       <input type="checkbox" id="cb-hier" checked>
-      <span style="display:inline-flex;align-items:center"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="#3A3A6A" stroke-width="1.5" stroke-dasharray="3 3"/></svg></span>
+      <span style="display:inline-flex;align-items:center"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="3 3"/></svg></span>
       階層連線
     </label>
   </div>
@@ -388,15 +388,15 @@
       <defs>
         <marker id="arrow" viewBox="0 -4 8 8" refX="8" refY="0"
                 markerWidth="5" markerHeight="5" orient="auto">
-          <path d="M0,-4L8,0L0,4" fill="#6666AA"/>
+          <path d="M0,-4L8,0L0,4" fill="#4D8DBA"/>
         </marker>
         <marker id="arrow-out" viewBox="0 -4 8 8" refX="8" refY="0"
                 markerWidth="5" markerHeight="5" orient="auto">
-          <path d="M0,-4L8,0L0,4" fill="#00FF8C"/>
+          <path d="M0,-4L8,0L0,4" fill="#1A7D3C"/>
         </marker>
         <marker id="arrow-in" viewBox="0 -4 8 8" refX="8" refY="0"
                 markerWidth="5" markerHeight="5" orient="auto">
-          <path d="M0,-4L8,0L0,4" fill="#FF3068"/>
+          <path d="M0,-4L8,0L0,4" fill="#C01020"/>
         </marker>
       </defs>
     </svg>
@@ -407,11 +407,11 @@
       <div class="leg-row"><span class="dot" style="background:#4499FF"></span> Chapter H</div>
       <div class="leg-row"><span class="dot" style="background:#3A3A6A;border:2px solid #00E5CC;width:14px;height:14px;border-radius:50%"></span> 父節點（條款標題）</div>
       <div class="leg-row" style="margin-top:4px">
-        <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#6666AA" stroke-width="1.5"/></svg>
+        <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#4D8DBA" stroke-width="1.5"/></svg>
         交叉引用
       </div>
       <div class="leg-row">
-        <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#3A3A6A" stroke-width="1.5" stroke-dasharray="3 3"/></svg>
+        <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="3 3"/></svg>
         子條款隸屬
       </div>
     </div>
@@ -474,7 +474,7 @@ function nodeColor(d) {
 }
 function nodeStroke(d) {
   return d.is_sub ? d3.color(nodeColor(d)).darker(0.4)
-                  : '#00AAAA';      // parent nodes get a darker border
+                  : '#4D8DBA';      // parent nodes get a darker border
 }
 function nodeR(d) {
   if (!d.is_sub) return Math.max(9, Math.min(20, 9 + (d.degree || 0) * 0.4));
@@ -557,7 +557,7 @@ const sim = d3.forceSimulation(nodes)
 let hierSel = gHier.selectAll('.link.hier').data(hEdges)
   .join('line')
   .attr('class', 'link hier')
-  .attr('stroke', '#2A2A48')
+  .attr('stroke', '#C9A84C')
   .attr('stroke-width', 1)
   .attr('stroke-opacity', 0.6);
 
@@ -565,7 +565,7 @@ let hierSel = gHier.selectAll('.link.hier').data(hEdges)
 let xrefSel = gEdge.selectAll('.link.xref').data(xEdges)
   .join('line')
   .attr('class', 'link xref')
-  .attr('stroke', '#3A3A6A')
+  .attr('stroke', '#C9A84C')
   .attr('stroke-opacity', 0.4)
   .attr('stroke-width', d => Math.max(0.8, Math.min(3.5, 0.6 + (d.weight||1)*0.25)))
   .attr('marker-end', 'url(#arrow)');
@@ -644,7 +644,7 @@ function selectNode(id) {
   nodeSel.selectAll('circle')
     .attr('opacity', d => d.id===id ? 1 : neighbors.has(d.id) ? 0.9 : 0.08)
     .attr('stroke', d => {
-      if (d.id===id) return '#D8D8FF';
+      if (d.id===id) return '#0A2F45';
       return nodeStroke(d);
     })
     .attr('stroke-width', d => d.id===id ? 3 : d.is_sub ? 1 : 2);
@@ -656,9 +656,9 @@ function selectNode(id) {
     .attr('stroke', d => {
       const s = typeof d.source==='object' ? d.source.id : d.source;
       const t = typeof d.target==='object' ? d.target.id : d.target;
-      if (s===id) return '#00FF8C';
-      if (t===id) return '#FF3068';
-      return '#3A3A6A';
+      if (s===id) return '#1A7D3C';
+      if (t===id) return '#C01020';
+      return '#C9A84C';
     })
     .attr('stroke-opacity', d => {
       const s = typeof d.source==='object' ? d.source.id : d.source;
@@ -1008,7 +1008,7 @@ function applyVisibility() {
   nodeSel.style('pointer-events', d => nodeVisible(d) ? 'all' : 'none');
 
   xrefSel
-    .attr('stroke', '#3A3A6A')
+    .attr('stroke', '#C9A84C')
     .attr('stroke-opacity', d => {
       if (hl) return 0.04;
       const sv = nodeVisible(typeof d.source==='object'?d.source:nodeById[d.source]);
