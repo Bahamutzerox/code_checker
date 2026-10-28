@@ -41,7 +41,7 @@
     max-width: 280px;
     padding: 5px 10px;
     border-radius: 6px;
-    border: 1px solid #C9A84C;
+    border: 1px solid #9BBCCC;
     background: #FFEFC4;
     color: #0A2F45;
     font-size: 13px;
@@ -76,7 +76,7 @@
   #btn-reset {
     padding: 4px 12px;
     border-radius: 5px;
-    border: 1px solid #C9A84C;
+    border: 1px solid #9BBCCC;
     background: #F0E4B0;
     color: #086288;
     font-size: 12px;
@@ -111,6 +111,7 @@
     width: 100%;
     height: 100%;
     cursor: grab;
+    background: #FAFAF6;
   }
   #graph:active { cursor: grabbing; }
 
@@ -120,7 +121,7 @@
     bottom: 16px;
     left: 16px;
     background: rgba(255,247,224,0.95);
-    border: 1px solid #C9A84C;
+    border: 1px solid #9BBCCC;
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 11px;
@@ -238,7 +239,7 @@
   .badge:hover { opacity: 0.75; }
   .badge-in     { background: #FDEAEA; color: #C01020; border: 1px solid #F5A0B0; }
   .badge-out    { background: #D5EFE0; color: #1A7D3C; border: 1px solid #80C895; }
-  .badge-parent { background: #F0E4B0; color: #086288; border: 1px solid #C9A84C; }
+  .badge-parent { background: #F0E4B0; color: #086288; border: 1px solid #9BBCCC; }
   .badge-children { background: #E8F4FF; color: #086288; border: 1px solid #86B4D4; }
 
   #panel-body {
@@ -311,7 +312,7 @@
   .node.is-sub   circle { stroke-width: 1; }
   .node text {
     font-size: 9px;
-    fill: #086288;
+    fill: #1A3A50;
     pointer-events: none;
     text-anchor: middle;
     dominant-baseline: hanging;
@@ -325,7 +326,7 @@
   #tooltip {
     position: fixed;
     background: rgba(255,247,224,0.97);
-    border: 1px solid #C9A84C;
+    border: 1px solid #9BBCCC;
     border-radius: 6px;
     padding: 7px 11px;
     font-size: 12px;
@@ -369,7 +370,7 @@
     </label>
     <label class="filter-label">
       <input type="checkbox" id="cb-hier" checked>
-      <span style="display:inline-flex;align-items:center"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="3 3"/></svg></span>
+      <span style="display:inline-flex;align-items:center"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="#9BBCCC" stroke-width="1.5" stroke-dasharray="3 3"/></svg></span>
       階層連線
     </label>
   </div>
@@ -388,7 +389,7 @@
       <defs>
         <marker id="arrow" viewBox="0 -4 8 8" refX="8" refY="0"
                 markerWidth="5" markerHeight="5" orient="auto">
-          <path d="M0,-4L8,0L0,4" fill="#4D8DBA"/>
+          <path d="M0,-4L8,0L0,4" fill="#7755AA"/>
         </marker>
         <marker id="arrow-out" viewBox="0 -4 8 8" refX="8" refY="0"
                 markerWidth="5" markerHeight="5" orient="auto">
@@ -407,11 +408,11 @@
       <div class="leg-row"><span class="dot" style="background:#4499FF"></span> Chapter H</div>
       <div class="leg-row"><span class="dot" style="background:#3A3A6A;border:2px solid #00E5CC;width:14px;height:14px;border-radius:50%"></span> 父節點（條款標題）</div>
       <div class="leg-row" style="margin-top:4px">
-        <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#4D8DBA" stroke-width="1.5"/></svg>
+        <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#9BBCCC" stroke-width="1.5"/></svg>
         交叉引用
       </div>
       <div class="leg-row">
-        <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="3 3"/></svg>
+        <svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#9BBCCC" stroke-width="1.5" stroke-dasharray="3 3"/></svg>
         子條款隸屬
       </div>
     </div>
@@ -468,13 +469,13 @@ const GRAPH_DATA = {"nodes":[{"id":"ART_1","label":"Art. 1","type":"article","nu
 
 // ── Color ──────────────────────────────────────────────────────────────────
 function nodeColor(d) {
-  if (d.chapter === 'F') return '#FF9900';
-  if (d.chapter === 'H') return '#4499FF';
+  if (d.chapter === 'F') return '#C86800';
+  if (d.chapter === 'H') return '#1B5FAF';
   return d.type === 'article' ? '#00E5CC' : '#9966FF';
 }
 function nodeStroke(d) {
   return d.is_sub ? d3.color(nodeColor(d)).darker(0.4)
-                  : '#4D8DBA';      // parent nodes get a darker border
+                  : '#155E8A';      // parent nodes get a darker border
 }
 function nodeR(d) {
   if (!d.is_sub) return Math.max(9, Math.min(20, 9 + (d.degree || 0) * 0.4));
@@ -557,7 +558,7 @@ const sim = d3.forceSimulation(nodes)
 let hierSel = gHier.selectAll('.link.hier').data(hEdges)
   .join('line')
   .attr('class', 'link hier')
-  .attr('stroke', '#C9A84C')
+  .attr('stroke', '#BBCFD8')
   .attr('stroke-width', 1)
   .attr('stroke-opacity', 0.6);
 
@@ -565,7 +566,7 @@ let hierSel = gHier.selectAll('.link.hier').data(hEdges)
 let xrefSel = gEdge.selectAll('.link.xref').data(xEdges)
   .join('line')
   .attr('class', 'link xref')
-  .attr('stroke', '#C9A84C')
+  .attr('stroke', '#BBCFD8')
   .attr('stroke-opacity', 0.4)
   .attr('stroke-width', d => Math.max(0.8, Math.min(3.5, 0.6 + (d.weight||1)*0.25)))
   .attr('marker-end', 'url(#arrow)');
@@ -658,7 +659,7 @@ function selectNode(id) {
       const t = typeof d.target==='object' ? d.target.id : d.target;
       if (s===id) return '#1A7D3C';
       if (t===id) return '#C01020';
-      return '#C9A84C';
+      return '#9BBCCC';
     })
     .attr('stroke-opacity', d => {
       const s = typeof d.source==='object' ? d.source.id : d.source;
@@ -995,7 +996,7 @@ function applyVisibility() {
       if (hl) return nodeHighlighted(d) ? 1 : 0.07;
       return 1;
     })
-    .attr('stroke', d => hl && nodeHighlighted(d) ? '#FFB300' : nodeStroke(d))
+    .attr('stroke', d => hl && nodeHighlighted(d) ? '#C86800' : nodeStroke(d))
     .attr('stroke-width', d => hl && nodeHighlighted(d) ? 3 : d.is_sub ? 1 : 2);
 
   nodeSel.selectAll('text')
@@ -1008,7 +1009,7 @@ function applyVisibility() {
   nodeSel.style('pointer-events', d => nodeVisible(d) ? 'all' : 'none');
 
   xrefSel
-    .attr('stroke', '#C9A84C')
+    .attr('stroke', '#9BBCCC')
     .attr('stroke-opacity', d => {
       if (hl) return 0.04;
       const sv = nodeVisible(typeof d.source==='object'?d.source:nodeById[d.source]);
