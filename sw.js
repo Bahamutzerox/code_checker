@@ -1,4 +1,4 @@
-const CACHE = 'open-code-v5';
+const CACHE = 'open-code-v6';
 const CORE  = ['./index.html', './name_checker.html', './madrid_graph.html', './icon.svg', './manifest.json'];
 
 self.addEventListener('install', e => {
